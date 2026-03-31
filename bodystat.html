@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI & Calories</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#eaf4ff,#f7fbff);
+padding:20px;
+}
+
+.container{
+background:#fff;
+padding:25px;
+border-radius:22px;
+max-width:450px;
+margin:auto;
+box-shadow:0 20px 50px rgba(0,0,0,0.12);
+}
+
+.title-box{
+padding:14px;
+margin-bottom:18px;
+text-align:center;
+border:2px solid #6a11cb;
+border-radius:14px;
+}
+
+.main-title{
+font-size:26px;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+font-size:14px;
+margin-bottom:20px;
+}
+
+.block{
+background:#f9fbff;
+padding:16px;
+border-radius:18px;
+margin-bottom:18px;
+border:1px solid rgba(106,17,203,0.08);
+box-shadow:0 8px 20px rgba(106,17,203,0.08);
+transition:0.2s;
+}
+
+.block:hover{
+transform:translateY(-2px);
+box-shadow:0 12px 25px rgba(106,17,203,0.15);
+}
+
+.label{font-weight:600;margin-bottom:5px;}
+
+input,select{
+width:100%;
+padding:12px;
+margin-bottom:10px;
+border:1px solid #ddd;
+border-radius:10px;
+transition:.2s;
+}
+
+input:focus,select:focus{
+outline:none;
+border:1.5px solid #6a11cb;
+box-shadow:0 0 0 3px rgba(106,17,203,0.15);
+}
+
+.input-error{
+border:1.5px solid #ef4444 !important;
+box-shadow:0 0 0 3px rgba(239,68,68,0.15);
+}
+
+.height-row{display:flex;gap:10px;}
+.height-row input{flex:1;}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:30px;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+color:#fff;
+font-size:16px;
+cursor:pointer;
+box-shadow:0 12px 30px rgba(106,17,203,0.35);
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 15px 30px rgba(106,17,203,0.35);
+}
+
+button:disabled{
+opacity:0.7;
+cursor:not-allowed;
+}
+
+.result{
+margin-top:20px;
+padding:22px;
+border-radius:20px;
+background:linear-gradient(135deg,#eef2ff,#f5f7ff);
+text-align:center;
+box-shadow:0 15px 40px rgba(106,17,203,0.15);
+animation:fadeUp .4s ease;
+border:1px solid rgba(106,17,203,0.1);
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(15px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+.error{
+color:#ef4444;
+font-weight:600;
+line-height:1.8;
+background:#fff1f1;
+padding:14px;
+border-radius:12px;
+border:1px solid rgba(239,68,68,0.2);
+}
+
+.footer{
+text-align:center;
+font-size:12px;
+color:#aaa;
+margin-top:15px;
+}
+/* NAV BUTTONS */
+.nav-buttons{
+display:flex;
+gap:12px;
+margin-top:22px;
+}
+
+.nav-btn{
+flex:1;
+padding:12px 0;
+border:none;
+border-radius:30px;
+color:#fff;
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+transition:0.2s;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.nav-active{
+background:#22c55e;
+}
+
+.nav-secondary{
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+}
+
+.nav-btn:active{
+transform:scale(0.97);
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title-box">
+<h1 class="main-title">Check Your Body Stats</h1>
+</div>
+
+<p class="subtitle">Let’s start your fitness journey 💪</p>
+
+<div class="block">
+<p class="label">Height :</p>
+<select id="heightUnit">
+<option value="ft">Feet + Inches</option>
+<option value="cm">Height in cm</option>
+<option value="inch">Height in inches</option>
+</select>
+
+<div class="height-row">
+<input type="number" id="height" placeholder="Enter feet">
+<input type="number" id="inchExtra" placeholder="Enter inches">
+</div>
+</div>
+
+<div class="block">
+<p class="label">Weight :</p>
+<select id="weightUnit">
+<option value="kg">Weight in kg</option>
+<option value="lbs">Weight in lbs</option>
+</select>
+<input type="number" id="weight" placeholder="Enter weight">
+</div>
+
+<div class="block">
+<p class="label">Age :</p>
+<input type="number" id="age" placeholder="Enter age">
+</div>
+
+<div class="block">
+<p class="label">Gender :</p>
+<select id="gender">
+<option value="">Select gender</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="other">Other</option>
+</select>
+</div>
+
+<div class="block">
+<p class="label">Activity Level :</p>
+<select id="activity">
+<option value="">Select activity</option>
+<option value="1.2">Sedentary</option>
+<option value="1.375">Light</option>
+<option value="1.55">Moderate</option>
+<option value="1.725">Active</option>
+</select>
+</div>
+
+<button id="calcBtn" onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+<div class="nav-buttons">
+
+<button class="nav-btn nav-active">
+🏠 Stats
+</button>
+
+<button class="nav-btn nav-secondary"
+onclick="window.location.href='plan.html'">
+📋 Plan
+</button>
+
+<button class="nav-btn nav-secondary"
+onclick="window.location.href='progress.html'">
+📈 Progress
+</button>
+
+</div>
+
+</div>
+<div class="footer">  
+    © FitWithSubha — Subhadip  
+</div>  
+<script>
+
+/* ELEMENTS */
+const heightUnit = document.getElementById("heightUnit");
+const heightInput = document.getElementById("height");
+const inchInput = document.getElementById("inchExtra");
+
+const weightUnit = document.getElementById("weightUnit");
+const weightInput = document.getElementById("weight");
+
+/* STATE */
+let lastHeightUnit = heightUnit.value;
+let lastWeightUnit = weightUnit.value;
+let isFirstLoad = true;
+
+/* HEIGHT UI */
+function updateHeightFields(){
+if(heightUnit.value==="ft"){
+inchInput.style.display="block";
+}else{
+inchInput.style.display="none";
+inchInput.value="";
+}
+}
+updateHeightFields();
+
+/* 🔥 HEIGHT CONVERSION FIX */
+heightUnit.addEventListener("change", function(){
+
+if(isFirstLoad) return;
+
+let h = parseFloat(heightInput.value);
+let inch = parseFloat(inchInput.value) || 0;
+
+if(isNaN(h)) return;
+
+/* convert → cm */
+let cm;
+
+if(lastHeightUnit === "ft"){
+cm = ((h * 12) + inch) * 2.54;
+}
+else if(lastHeightUnit === "inch"){
+cm = h * 2.54;
+}
+else{
+cm = h;
+}
+
+/* convert → selected */
+if(this.value === "cm"){
+heightInput.value = Math.round(cm);
+}
+else if(this.value === "inch"){
+heightInput.value = (cm / 2.54).toFixed(1);
+}
+else{
+let total = cm / 2.54;
+heightInput.value = Math.floor(total / 12);
+inchInput.value = Math.round(total % 12);
+}
+
+lastHeightUnit = this.value;
+updateHeightFields();
+
+});
+
+/* 🔥 WEIGHT CONVERSION FIX */
+weightUnit.addEventListener("change", function(){
+
+let w = parseFloat(weightInput.value);
+if(isNaN(w)) return;
+
+let kg = lastWeightUnit === "kg" ? w : w / 2.20462;
+
+if(this.value === "kg"){
+weightInput.value = Math.round(kg);
+}else{
+weightInput.value = (kg * 2.20462).toFixed(1);
+}
+
+lastWeightUnit = this.value;
+
+});
+
+/* FIX FIRST LOAD BUG */
+window.onload = function(){
+setTimeout(()=>{
+isFirstLoad = false;
+},300);
+};
+
+/* ERROR SYSTEM */
+function clearErrors(){
+document.querySelectorAll("input,select").forEach(el=>{
+el.classList.remove("input-error");
+});
+}
+
+function markError(id){
+document.getElementById(id).classList.add("input-error");
+}
+
+document.querySelectorAll("input,select").forEach(el=>{
+el.addEventListener("input",()=>el.classList.remove("input-error"));
+});
+
+function showError(messages){
+let formatted = messages.map(msg => `⚠️ ${msg}`).join("<br>");
+document.getElementById("result").innerHTML =
+`<div class="error">${formatted}</div>`;
+}
+
+/* MAIN */
+function calculate(){
+
+const btn=document.getElementById("calcBtn");
+btn.innerText="Calculating...";
+btn.disabled=true;
+
+setTimeout(()=>{
+
+clearErrors();
+let errors=[];
+
+let h=parseFloat(heightInput.value);
+let hu=heightUnit.value;
+let inchExtra=parseFloat(inchInput.value)||0;
+
+let w=parseFloat(weightInput.value);
+let wu=weightUnit.value;
+
+let age=parseFloat(document.getElementById("age").value);
+let gender=document.getElementById("gender").value;
+let act=document.getElementById("activity").value;
+
+/* VALIDATION */
+/* VALIDATION */
+
+if(isNaN(h)){
+markError("height");
+errors.push("Enter valid height");
+}
+
+/* HEIGHT LIMIT */
+if(hu === "ft" && h > 10){
+markError("height");
+errors.push("Height exceeds realistic human limit");
+}
+
+if(hu === "cm" && h > 305){
+markError("height");
+errors.push("Height exceeds realistic human limit");
+}
+
+if(hu === "inch" && h > 120){
+markError("height");
+errors.push("Height exceeds realistic human limit");
+}
+
+if(isNaN(w)){
+markError("weight");
+errors.push("Enter valid weight");
+}
+
+/* WEIGHT LIMIT */
+if(w > 500){
+markError("weight");
+errors.push("Weight exceeds realistic human limit ");
+}
+
+if(isNaN(age)){
+markError("age");
+errors.push("Enter valid age");
+}
+if(age > 200)
+{
+  markError("age");
+errors.push("Age exceeds realistic limit ");
+}
+
+if(gender===""){
+markError("gender");
+errors.push("Select gender");
+}
+
+if(act===""){
+markError("activity");
+errors.push("Select activity level");
+}
+
+if(hu==="ft" && inchExtra>=12){
+markError("inchExtra");
+errors.push("Inches must be 0-11");
+}
+
+if(errors.length>0){
+showError(errors);
+btn.innerText="Recalculate";
+btn.disabled=false;
+return;
+}
+
+/* CALCULATIONS */
+let heightCM=hu==="cm"?h:hu==="inch"?h*2.54:((h*12)+inchExtra)*2.54;
+let weightKG=wu==="kg"?w:w/2.20462;
+
+let bmiVal=weightKG/((heightCM/100)**2);
+let bmi=bmiVal.toFixed(1);
+
+let status="",color="",text="";
+
+/* 🔥 MOTIVATION LOGIC */
+if(bmiVal<16){
+status="Severely Underweight";
+color="#ef4444";
+text="You are severely underweight, but I believe in you — you can build a strong body 💪🔥";
+}
+else if(bmiVal<18.5){
+status="Underweight";
+color="#facc15";
+text="You are underweight, but I believe in you — you can gain strength 🔥";
+}
+else if(bmiVal<25){
+status="Normal";
+color="#22c55e";
+text="You are in great shape — keep it up 👏";
+}
+else if(bmiVal<30){
+status="Overweight";
+color="#f97316";
+text="You are slightly overweight, but I believe in you — small steps will transform you 💯";
+}
+else{
+status="Obese";
+color="#ef4444";
+text="You are in obese range now, but I believe in you — discipline will change everything 🔥";
+}
+
+let bmr=gender==="male"
+?10*weightKG+6.25*heightCM-5*age+5
+:gender==="female"
+?10*weightKG+6.25*heightCM-5*age-161
+:10*weightKG+6.25*heightCM-5*age-78;
+
+let calories=Math.round(bmr*act);
+
+/* 🔥 SAVE CORRECT DATA */
+localStorage.setItem("heightUnit", hu);
+localStorage.setItem("heightValue", h);
+localStorage.setItem("inchExtra", inchExtra);
+localStorage.setItem("weight", weightKG);
+localStorage.setItem("age", age);
+localStorage.setItem("gender", gender);
+localStorage.setItem("activity", act);
+
+/* RESULT UI */
+document.getElementById("result").innerHTML=
+`
+<div style="font-size:22px;font-weight:700;">
+📊 BMI: <span style="color:${color};font-size:24px;">${bmi}</span><br>
+<span style="color:${color};">${status}</span>
+</div>
+
+<div style="margin-top:14px;padding:12px;border-radius:12px;background:#fff;">
+🔥 <b>BMR / Calories :</b><br>
+${calories} kcal/day
+</div>
+
+<div style="margin-top:14px;">
+${text}
+</div>
+
+<div style="margin-top:18px; font-size:13px; color:#666;">
+If you want to change something, hit the button below 👇
+</div>
+
+<button style="margin-top:12px;" onclick="goToPlan(${bmi},${calories})">
+Create My Fitness Plan 🚀
+</button>
+`;
+setTimeout(() => {
+    document.getElementById("result").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}, 100);
+btn.innerText="Recalculate";
+btn.disabled=false;
+
+},600);
+}
+
+/* NAVIGATION */
+function goToPlan(bmi,calories){
+
+// 🔥 ADD THIS LINE
+localStorage.setItem("fromBMI", "true");
+
+localStorage.setItem("bmi",bmi);
+localStorage.setItem("calories",calories);
+
+window.location.href="plan.html";
+}
+
+</script>
+</body>
+</html>

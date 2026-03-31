@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitWithSubha</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:'Poppins',sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background: linear-gradient(135deg,#6a11cb,#2575fc);
+    transition:0.4s;
+}
+
+/* FADE OUT */
+body.fade-out{
+    opacity:0;
+}
+
+/* CARD */
+.card{
+    position:relative;
+    width:92%;
+    max-width:420px;
+    padding:55px 30px;
+    border-radius:26px;
+    text-align:center;
+    color:#fff;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+
+    border:1px solid rgba(255,255,255,0.2);
+
+    box-shadow:
+        0 20px 60px rgba(37,117,252,0.25),
+        0 10px 30px rgba(0,0,0,0.35);
+
+    animation:fadeIn 0.6s ease;
+}
+
+/* SOFT GLOW */
+.card::before{
+    content:"";
+    position:absolute;
+    top:-40px;
+    left:-40px;
+    width:120%;
+    height:120%;
+    background: radial-gradient(circle, rgba(37,117,252,0.2), transparent 70%);
+    z-index:-1;
+}
+
+/* LOGO */
+.logo img{
+    width:140px;
+    border-radius:26px;
+    padding:14px;
+    background: rgba(255,255,255,0.15);
+    box-shadow:
+        0 0 40px rgba(255,255,255,0.3),
+        0 15px 40px rgba(0,0,0,0.5);
+}
+
+/* TEXT */
+.subtitle{
+    margin-top:22px;
+    font-size:22px;
+    font-weight:700;
+    line-height:1.5;
+}
+
+.welcome{
+    margin-top:16px;
+    font-size:17px;
+    opacity:0.95;
+}
+
+.countdown{
+    margin-top:22px;
+    font-size:16px;
+    opacity:0.9;
+}
+
+/* PROGRESS BAR */
+.progress-bar{
+    width:100%;
+    height:6px;
+    background:rgba(255,255,255,0.2);
+    border-radius:10px;
+    margin-top:12px;
+    overflow:hidden;
+}
+
+.progress{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#6a11cb,#2575fc);
+    transition:width 1s linear;
+}
+
+/* BUTTON */
+button{
+    margin-top:20px;
+    padding:14px 28px;
+    border:none;
+    border-radius:30px;
+
+    background:linear-gradient(135deg,#6a11cb,#2575fc);
+    color:#fff;
+
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+
+    box-shadow:0 10px 25px rgba(37,117,252,0.4);
+    transition:.25s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 15px 35px rgba(37,117,252,0.6);
+}
+
+button:active{
+    transform:scale(0.97);
+}
+
+/* FOOTER */
+.footer{
+    margin-top:24px;
+    font-size:12px;
+    opacity:0.6;
+}
+
+/* ORBS */
+.orb{
+    position:absolute;
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3), transparent);
+    filter: blur(40px);
+    animation: float 6s ease-in-out infinite;
+}
+
+.o1{top:-50px; left:-50px;}
+.o2{top:-50px; right:-50px;}
+.o3{bottom:-50px; left:-50px;}
+.o4{bottom:-50px; right:-50px;}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-12px);}
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+button{
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,255,255,0.4);}
+    70%{box-shadow:0 0 0 15px rgba(255,255,255,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,255,255,0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
+<div class="orb o4"></div>
+
+<div class="logo">
+    <img src="bmilogo.png" onerror="this.style.display='none'">
+</div>
+
+<div class="subtitle">
+    Transform your body.<br>Transform your life.
+</div>
+
+<div class="welcome">
+    This is where everything changes 🔥
+</div>
+
+<div class="countdown" id="countdown">
+    Starting in 5...
+</div>
+
+<div class="progress-bar">
+    <div class="progress" id="progress"></div>
+</div>
+
+<div class="helper">
+    Don’t want to wait? Start now 👇
+</div>
+
+<button onclick="goNow()">
+Start Now 🚀
+</button>
+
+<div class="footer">
+    © FitWithSubha — Subhadip
+</div>
+
+</div>
+
+<script>
+let total = 5;
+let count = total;
+
+const el = document.getElementById("countdown");
+const progress = document.getElementById("progress");
+
+el.innerText = "Starting in " + total + " Second...";
+
+const timer = setInterval(() => {
+    count--;
+
+    if(count > 0){
+        el.innerText = "Starting in " + count + " Second...";
+        progress.style.width = ((total - count) / total) * 100 + "%";
+    }else{
+        el.innerText = "Let's go 🔥";
+        progress.style.width = "100%";
+        clearInterval(timer);
+
+        setTimeout(() => {
+            goNow();
+        }, 600);
+    }
+}, 1000);
+
+function goNow(){
+    document.body.classList.add("fade-out");
+
+    setTimeout(()=>{
+        window.location.href = "bodystat.html";
+    }, 400);
+}
+</script>
+
+</body>
+</html>
