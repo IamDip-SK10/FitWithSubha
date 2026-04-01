@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Progress</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#eaf4ff,#f7fbff);
+padding:20px;
+}
+
+.container{
+background:#fff;
+padding:25px;
+border-radius:22px;
+max-width:450px;
+margin:auto;
+box-shadow:0 20px 50px rgba(0,0,0,0.12);
+}
+
+.title-box{
+padding:14px;
+margin-bottom:18px;
+text-align:center;
+border:2px solid #6a11cb;
+border-radius:14px;
+}
+
+.main-title{
+font-size:26px;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+font-size:14px;
+margin-bottom:20px;
+}
+
+.block{
+background:#f9fbff;
+padding:16px;
+border-radius:18px;
+margin-bottom:18px;
+border:1px solid rgba(106,17,203,0.08);
+box-shadow:0 8px 20px rgba(106,17,203,0.08);
+}
+
+.label{
+font-weight:600;
+margin-bottom:5px;
+}
+
+/* 🔥 PREMIUM INPUT + DROPDOWN */
+input,select{
+width:100%;
+padding:14px;
+margin-bottom:10px;
+
+border:1.5px solid #e5e7eb;
+border-radius:14px;
+
+font-size:15px;
+font-weight:500;
+
+transition:0.2s;
+}
+
+/* ✨ DIFFERENT BACKGROUND (like BMI page) */
+select{
+background:#f3f4f6;
+
+appearance:none;
+-webkit-appearance:none;
+-moz-appearance:none;
+
+cursor:pointer;
+
+/* custom arrow */
+background-image:url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+background-repeat:no-repeat;
+background-position:right 12px center;
+background-size:18px;
+}
+
+input{
+background:#f9fafb;
+}
+
+/* ✨ FOCUS EFFECT */
+input:focus,select:focus{
+outline:none;
+border:1.5px solid #6a11cb;
+box-shadow:0 0 0 3px rgba(106,17,203,0.15);
+}
+
+/* BUTTON */
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:30px;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+color:#fff;
+font-size:16px;
+cursor:pointer;
+margin-top:10px;
+transition:0.2s;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 12px 25px rgba(106,17,203,0.3);
+}
+
+/* RESULT BOX */
+.result{
+margin-top:20px;
+padding:20px;
+border-radius:20px;
+background:linear-gradient(135deg,#eef2ff,#f5f7ff);
+text-align:center;
+box-shadow:0 15px 40px rgba(106,17,203,0.18);
+line-height:1.7;
+animation:fadeUp 0.4s ease;
+}
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(10px);}
+to{opacity:1; transform:translateY(0);}
+}
+.change-value{
+font-size:18px;
+font-weight:700;
+}
+
+.error{
+color:#ef4444;
+font-weight:600;
+margin-top:10px;
+}
+
+.chart-container{
+margin-top:20px;
+padding:12px 6px;
+}
+
+/* NAV */
+.nav-buttons{
+display:flex;
+gap:12px;
+margin-top:22px;
+}
+
+.nav-btn{
+flex:1;
+padding:12px 0;
+border:none;
+border-radius:30px;
+color:#fff;
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.nav-active{
+background:#22c55e;
+}
+
+.nav-secondary{
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+}
+
+/* JOURNEY BOX */
+.journey-box{
+margin-top:25px;
+padding:20px;
+border-radius:20px;
+background:linear-gradient(135deg,#f3f0ff,#eef2ff);
+border:1px solid rgba(106,17,203,0.15);
+box-shadow:0 15px 40px rgba(106,17,203,0.18);
+text-align:center;
+}
+
+.journey-title{
+font-weight:700;
+font-size:18px;
+margin-bottom:8px;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.journey-btn{
+padding:12px 22px;
+border-radius:30px;
+font-size:14px;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+color:#fff;
+border:none;
+}
+
+/* FOOTER */
+.footer{
+text-align:center;
+font-size:12px;
+color:#aaa;
+margin-top:15px;
+}
+
+/* FLOAT BACK BUTTON */
+.back-btn{
+position:fixed;
+bottom:20px;
+right:20px;
+width:52px;
+height:52px;
+border-radius:50%;
+background:linear-gradient(135deg,#6a11cb,#2575fc);
+color:#fff;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:20px;
+box-shadow:0 8px 20px rgba(0,0,0,0.25);
+cursor:pointer;
+transition:0.2s;
+}
+
+.back-btn:active{
+transform:scale(0.9);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title-box">
+<h1 class="main-title">Track Your Progress</h1>
+</div>
+
+<p class="subtitle">Stay consistent & win daily 💪</p>
+
+<div class="block" id="setupBox">
+<p class="label">Current Weight :</p>
+<select id="unit">
+<option value="kg">Weight in kg</option>
+<option value="lbs">Weight in lbs</option>
+</select>
+<input type="number" id="startWeight">
+
+<p class="label">Target Weight :</p>
+<input type="number" id="targetWeightInput">
+
+<button onclick="startTracking()">Start Tracking 🚀</button>
+</div>
+
+<div class="block" id="trackBox" style="display:none;">
+<p class="label">Today's Weight :</p>
+<input type="number" id="todayWeight">
+
+<button onclick="addWeight()">Add Progress ➕</button>
+<button onclick="clearAll()" style="background:#ef4444;">Reset Progress 🗑️</button>
+
+<div class="error" id="errorBox"></div>
+</div>
+
+<div class="result" id="result"></div>
+
+<p style="font-size:12px;color:#666;margin-top:10px;text-align:center;">
+Your progress over time 📈
+</p>
+
+<div class="chart-container">
+<canvas id="chart"></canvas>
+</div>
+
+<div class="journey-box">
+<div class="journey-title">🚀 My Transformation</div>
+<p>Here’s how I changed my life in 1 year 💪</p>
+<button class="journey-btn" onclick="window.location.href='myjourney.html'">
+Read My Journey 🔥 →
+</button>
+</div>
+
+<div class="nav-buttons">
+<button class="nav-btn nav-secondary" onclick="location.href='bodystat.html'">🏠 Stats</button>
+<button class="nav-btn nav-secondary" onclick="location.href='plan.html'">📋 Plan</button>
+<button class="nav-btn nav-active">📈 Progress</button>
+</div>
+
+<div class="footer">© FitWithSubha — Subhadip</div>
+
+</div>
+
+<div class="back-btn" onclick="history.back()">←</div>
+
+<script>
+let history = JSON.parse(localStorage.getItem("weightHistory")) || [];
+let start = parseFloat(localStorage.getItem("startWeight"));
+let target = parseFloat(localStorage.getItem("targetWeight"));
+let unit = localStorage.getItem("unit") || "kg";
+let streak = parseInt(localStorage.getItem("streak")) || 0;
+let lastDate = localStorage.getItem("lastEntryDate");
+
+/* INIT */
+if(start && target){
+document.getElementById("setupBox").style.display="none";
+document.getElementById("trackBox").style.display="block";
+loadData();
+
+setTimeout(() => {
+    document.getElementById("result").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}, 200);
+}
+
+/* START TRACKING */
+function startTracking(){
+let s = parseFloat(startWeight.value);
+let t = parseFloat(targetWeightInput.value);
+let u = document.getElementById("unit").value;
+
+if(isNaN(s)||isNaN(t)) return alert("Enter valid values");
+
+if(u==="lbs"){ s/=2.20462; t/=2.20462; }
+
+localStorage.setItem("startWeight",s);
+localStorage.setItem("targetWeight",t);
+localStorage.setItem("unit",u);
+
+history=[{weight:s,date:new Date().toLocaleDateString()}];
+localStorage.setItem("weightHistory",JSON.stringify(history));
+
+localStorage.setItem("streak",1);
+localStorage.setItem("lastEntryDate",new Date().toDateString());
+
+location.reload();
+}
+
+/* ADD WEIGHT */
+function addWeight(){
+let w=parseFloat(todayWeight.value);
+let today=new Date().toLocaleDateString();
+
+if(isNaN(w)) return showError("Enter valid weight");
+
+if(unit==="lbs") w/=2.20462;
+
+/* LIMIT 3 ENTRIES */
+let count=history.filter(x=>x.date===today).length;
+if(count>=3) return showError("Max 3 entries per day");
+
+/* 🚫 LIMIT ±3 KG FROM START */
+if(Math.abs(w - start) > 3){
+return showError(`⚠️ Kindly check again, your first weight of the day was (${start.toFixed(1)} ${unit||"kg"})`);
+}
+
+/* 🔥 STREAK LOGIC */
+let todayStr = new Date().toDateString();
+let yesterday = new Date();
+yesterday.setDate(yesterday.getDate()-1);
+
+if(lastDate === yesterday.toDateString()){
+streak++;
+}
+else if(lastDate !== todayStr){
+streak = 1;
+}
+
+localStorage.setItem("streak",streak);
+localStorage.setItem("lastEntryDate",todayStr);
+
+/* SAVE */
+history.push({weight:w,date:today});
+localStorage.setItem("weightHistory",JSON.stringify(history));
+
+loadData();
+
+setTimeout(() => {
+    document.getElementById("result").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}, 100);
+
+todayWeight.value="";
+}
+
+/* ERROR */
+function showError(msg){
+errorBox.innerText=msg;
+}
+
+/* RESET */
+function clearAll(){
+localStorage.clear();
+location.reload();
+}
+
+/* LOAD DATA */
+function loadData(){
+
+const ctx=document.getElementById("chart").getContext("2d");
+
+/* DESTROY OLD CHART (IMPORTANT) */
+if(window.myChart) window.myChart.destroy();
+
+let weights=history.map(x=>x.weight);
+let labels=history.map(x=>x.date);
+
+/* GRAPH */
+window.myChart = new Chart(ctx,{
+type:'line',
+data:{
+labels:labels,
+datasets:[
+{
+label:"Progress",
+data:weights,
+borderColor:"#0ea5e9",
+backgroundColor:"rgba(56,189,248,0.3)",
+fill:true,
+tension:0.4
+},
+{
+label:"Target",
+data:weights.map(()=>target),
+borderDash:[6,6],
+borderColor:"#ef4444"
+}
+]
+}
+});
+
+/* VALUES */
+let current=weights[weights.length-1];
+
+/* 🎯 CORRECT CHANGE LOGIC */
+let percent;
+
+if(start > target){
+    // FAT LOSS → decrease is GOOD
+    let change = ((start - current) / start) * 100;
+    percent = (change > 0 ? "+" : "") + change.toFixed(1);
+}else{
+    // WEIGHT GAIN → increase is GOOD
+    let change = ((current - start) / start) * 100;
+    percent = (change > 0 ? "+" : "") + change.toFixed(1);
+}
+
+/* COLOR */
+let changeColor;
+
+if(start > target){
+changeColor = current < start ? "#22c55e" : "#ef4444";
+}else{
+changeColor = current > start ? "#22c55e" : "#ef4444";
+}
+
+/* MESSAGE */
+let msg="",color="#22c55e";
+
+if(history.length === 1){
+msg = "🚀 Welcome to your journey";
+color = "#6a11cb";
+}
+else if(Math.abs(current-target)<0.2){
+msg="🎯 Goal reached — amazing!";
+color="#6a11cb";
+}
+else if(Math.abs(current-target)<Math.abs(start-target)){
+msg="✅ Moving towards goal";
+}
+else{
+msg="⚠️ Going away — focus needed";
+color="#ef4444";
+}
+
+/* DISPLAY */
+result.innerHTML=`
+🔥 Start: ${start.toFixed(1)} ${unit || "kg"}<br>
+📍 Current: ${current.toFixed(1)} ${unit || "kg"}<br>
+🎯 Target: ${target.toFixed(1)} ${unit || "kg"}<br>
+📊 Change: <span class="change-value" style="color:${changeColor};">
+${percent}%
+</span><br><br>
+🔥 Streak: ${streak} days<br><br>
+<div style="color:${color};font-weight:600;">${msg}</div>
+`;
+}
+</script>
+
+</body>
+</html>
