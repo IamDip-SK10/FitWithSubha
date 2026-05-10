@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup - FitWithSubha</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+/* ✅ GLOBAL FIX */
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background: linear-gradient(135deg,#eef2ff,#f8fbff);
+  position:relative;
+
+  overflow-x:hidden;   /* ✅ FIX SIDE MOVEMENT */
+  overflow-y:auto;     /* ✅ ALLOW SCROLL */
+}
+
+/* 🔥 BACKGROUND GLOW (SAFE) */
+body::before,
+body::after{
+  content:"";
+  position:absolute;
+  width:300px;
+  height:300px;
+  border-radius:50%;
+  filter:blur(110px);
+  z-index:0;
+
+  pointer-events:none; /* ✅ PREVENT TOUCH DRAG BUG */
+}
+
+body::before{
+  background:#6a11cb;
+  top:-100px;
+  left:-100px;
+  opacity:0.35;
+}
+
+body::after{
+  background:#2575fc;
+  bottom:-100px;
+  right:-100px;
+  opacity:0.35;
+}
+
+/* ✅ CONTAINER FIX */
+.container{
+  width:100%;
+  max-width:340px;
+  padding:0 10px; /* ✅ PREVENT EDGE OVERFLOW */
+
+  text-align:center;
+  position:relative;
+  z-index:2;
+
+  animation:floatUI 5s ease-in-out infinite;
+}
+
+/* LOGO */
+.bmilogo{
+  display:flex;
+  justify-content:center;
+  margin-bottom:20px;
+}
+
+.bmilogo-box{
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(14px);
+  padding:14px;
+  border-radius:22px;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.1),
+    0 0 40px rgba(106,17,203,0.3);
+}
+
+.bmilogo-box img{
+  height:70px;
+}
+
+/* CARD */
+.card{
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(18px);
+  padding:24px;
+  border-radius:24px;
+
+  border:1px solid rgba(255,255,255,0.5);
+
+  box-shadow:
+    0 25px 70px rgba(0,0,0,0.1),
+    0 10px 30px rgba(106,17,203,0.25);
+
+  animation:fadeIn 0.5s ease;
+}
+
+/* TITLE */
+.card h3{
+  color:#6a11cb;
+  text-shadow:0 0 12px rgba(106,17,203,0.25);
+}
+
+/* INPUT GROUP */
+.input-group{
+  position:relative;
+  margin-bottom:18px;
+  text-align:left;
+}
+
+.input-group input{
+  width:100%;
+  padding:18px 14px 8px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+
+  font-size:14px;
+  transition:0.25s;
+}
+
+/* FOCUS GLOW */
+.input-group input:focus{
+  outline:none;
+  border:1.5px solid #6a11cb;
+
+  box-shadow:
+    0 0 0 4px rgba(106,17,203,0.12),
+    0 10px 25px rgba(106,17,203,0.15);
+
+  transform:translateY(-1px);
+}
+
+/* LABEL */
+.input-group label{
+  position:absolute;
+  left:14px;
+  top:15px;
+  font-size:13px;
+  color:#9ca3af;
+  transition:0.2s;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label{
+  top:5px;
+  font-size:11px;
+  color:#6a11cb;
+}
+
+/* ERROR */
+.input-error{
+  border:1.5px solid #ef4444 !important;
+  box-shadow:0 0 0 3px rgba(239,68,68,0.15);
+}
+
+/* SUCCESS */
+.input-success{
+  border:1.5px solid #22c55e !important;
+}
+
+/* ERROR TEXT */
+.error-text{
+  font-size:12px;
+  color:#ef4444;
+  margin-top:5px;
+}
+
+/* BUTTON */
+.signup-btn{
+  position:relative;
+  overflow:hidden;
+
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:30px;
+
+  background:linear-gradient(135deg,#6a11cb,#2575fc);
+  color:#fff;
+  font-weight:600;
+  font-size:15px;
+
+  cursor:pointer;
+  margin-top:10px;
+  margin-bottom:15px;
+  box-shadow:
+    0 12px 30px rgba(37,117,252,0.4),
+    0 0 25px rgba(106,17,203,0.3);
+
+  transition:0.25s;
+}
+
+/* HOVER */
+.signup-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 18px 40px rgba(37,117,252,0.5),
+    0 0 30px rgba(106,17,203,0.4);
+}
+
+/* CLICK */
+.signup-btn:active{
+  transform:scale(0.96);
+}
+
+/* LINK */
+.link{
+  margin-top:16px;
+  font-size:13px;
+  color:#6a11cb;
+  cursor:pointer;
+}
+
+.link:hover{
+  text-decoration:underline;
+}
+.link{
+  margin-top:16px;
+  font-size:14px;
+  color:#333; /* normal text = black */
+}
+
+.link span{
+  color:#6a11cb; /* highlight */
+  font-weight:600;
+  cursor:pointer;
+  margin-left:4px;
+  transition:0.2s;
+}
+
+.link span:hover{
+  text-decoration:underline;
+}
+/* SUCCESS MSG */
+.success{
+  color:#22c55e;
+  font-size:13px;
+  margin-top:10px;
+}
+
+/* ANIMATION */
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translateY(25px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+.input-group input:hover{
+  border-color:#c4b5fd;
+}
+@keyframes floatUI{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+.signup-btn{
+  position:relative;
+  overflow:hidden;
+}
+
+/* RIPPLE */
+.signup-btn::after{
+  content:"";
+  position:absolute;
+  width:0;
+  height:0;
+  border-radius:50%;
+  background:rgba(255,255,255,0.4);
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  opacity:0;
+}
+
+.signup-btn:active::after{
+  width:200px;
+  height:200px;
+  opacity:1;
+  transition:0.4s;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGO -->
+<div class="bmilogo">
+  <div class="bmilogo-box">
+    <img src="bmilogo.png">
+  </div>
+</div>
+
+<!-- CARD -->
+<div class="card">
+
+<h3 style="margin-bottom:12px;">Create Account 🚀</h3>
+
+<!-- EMAIL -->
+<div class="input-group">
+  <input type="email" id="email" placeholder=" ">
+  <label>Email</label>
+  <div id="emailError" class="error-text"></div>
+</div>
+
+<!-- PASSWORD -->
+<div class="input-group">
+  <input type="password" id="password" placeholder=" ">
+  <label>Password</label>
+  <div id="passError" class="error-text"></div>
+</div>
+
+<!-- CONFIRM -->
+<div class="input-group">
+  <input type="password" id="confirm" placeholder=" ">
+  <label>Confirm Password</label>
+  <div id="confirmError" class="error-text"></div>
+</div>
+
+<button class="signup-btn" onclick="signup()">Create Account</button>
+
+<div class="link">
+  Already have an account? 
+  <span onclick="window.location.href='login.html'">Login</span>
+</div>
+
+<div id="successMsg" class="success"></div>
+
+</div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  sendEmailVerification,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import { getFirestore, doc, setDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyBZIjOvVaHMrl8iDt9u5XqBZx8u9Kw0Mqk",
+  authDomain: "fitwithsubha.firebaseapp.com",
+  projectId: "fitwithsubha",
+  storageBucket: "fitwithsubha.firebasestorage.app",
+  messagingSenderId: "783014767318",
+  appId: "1:783014767318:web:667a91a7f39936c60c7777"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* INPUTS */
+const emailEl = document.getElementById("email");
+const passEl = document.getElementById("password");
+const confirmEl = document.getElementById("confirm");
+
+/* PASSWORD MATCH CHECK */
+function checkPassword(){
+  confirmEl.classList.remove("input-error","input-success");
+
+  if(confirmEl.value==="") return;
+
+  if(passEl.value===confirmEl.value){
+    confirmEl.classList.add("input-success");
+    document.getElementById("confirmError").innerText="";
+  }else{
+    confirmEl.classList.add("input-error");
+    document.getElementById("confirmError").innerText="Passwords do not match";
+  }
+}
+
+passEl.addEventListener("input",checkPassword);
+confirmEl.addEventListener("input",checkPassword);
+
+/* CLEAR ERRORS */
+function clearErrors(){
+  ["emailError","passError","confirmError"].forEach(id=>{
+    document.getElementById(id).innerText="";
+  });
+
+  ["email","password","confirm"].forEach(id=>{
+    document.getElementById(id).classList.remove("input-error");
+  });
+}
+
+/* 🔥 SIGNUP */
+window.signup = async function(){
+
+  clearErrors();
+
+  let email = emailEl.value.trim();
+  let pass = passEl.value;
+  let confirm = confirmEl.value;
+
+  /* VALIDATIONS */
+  if(!email){
+    emailEl.classList.add("input-error");
+    document.getElementById("emailError").innerText="Enter email";
+    return;
+  }
+
+  if(!pass){
+    passEl.classList.add("input-error");
+    document.getElementById("passError").innerText="Enter password";
+    return;
+  }
+
+  if(pass.length < 6){
+    passEl.classList.add("input-error");
+    document.getElementById("passError").innerText="Password must be 6+ characters";
+    return;
+  }
+
+  if(pass !== confirm){
+    confirmEl.classList.add("input-error");
+    document.getElementById("confirmError").innerText="Passwords do not match";
+    return;
+  }
+
+  try{
+    /* CREATE USER */
+    const userCredential = await createUserWithEmailAndPassword(auth,email,pass);
+    const user = userCredential.user;
+
+    /* SAVE USER DATA */
+    await setDoc(doc(db,"users",user.uid),{
+      email:user.email,
+      createdAt:new Date().toISOString()
+    });
+
+    /* SEND VERIFICATION EMAIL */
+    await sendEmailVerification(user);
+
+    /* 🔥 IMPORTANT: FORCE LOGOUT */
+    await signOut(auth);
+
+    /* SUCCESS MESSAGE */
+    document.getElementById("successMsg").innerText =
+      "✅ Account created! Please verify your email before login.";
+
+    /* REDIRECT */
+    setTimeout(()=>{
+      window.location.href = "login.html";
+    },2000);
+
+  } catch(e){
+
+    if(e.code === "auth/email-already-in-use"){
+      emailEl.classList.add("input-error");
+      document.getElementById("emailError").innerText="Email already registered";
+    }
+
+    else if(e.code === "auth/invalid-email"){
+      emailEl.classList.add("input-error");
+      document.getElementById("emailError").innerText="Invalid email format";
+    }
+
+    else{
+      document.getElementById("successMsg").innerText="❌ Something went wrong";
+      console.log(e);
+    }
+  }
+};
+
+</script>
+</body>
+</html>
