@@ -16,13 +16,19 @@ background:linear-gradient(135deg,#eaf4ff,#f7fbff);
 padding:20px;
 }
 
+
 .container{
-background:#fff;
+background:rgba(255,255,255,0.95);
 padding:25px;
 border-radius:22px;
 max-width:450px;
 margin:auto;
-box-shadow:0 20px 50px rgba(0,0,0,0.12);
+
+backdrop-filter: blur(10px);
+
+box-shadow:
+0 20px 50px rgba(0,0,0,0.12),
+0 0 40px rgba(106,17,203,0.08);
 }
 
 .title-box{
@@ -40,20 +46,31 @@ background:linear-gradient(135deg,#6a11cb,#2575fc);
 -webkit-text-fill-color:transparent;
 }
 
-.subtitle{
+.title{
 text-align:center;
 color:#666;
 font-size:14px;
 margin-bottom:20px;
 }
 
+
 .block{
 background:#f9fbff;
 padding:16px;
 border-radius:18px;
 margin-bottom:18px;
+
 border:1px solid rgba(106,17,203,0.08);
-box-shadow:0 8px 20px rgba(106,17,203,0.08);
+
+box-shadow:
+0 6px 18px rgba(0,0,0,0.05),
+0 0 20px rgba(106,17,203,0.05);
+
+transition:0.25s;
+}
+
+.block:hover{
+transform:translateY(-2px);
 }
 
 .label{
@@ -110,17 +127,26 @@ width:100%;
 padding:14px;
 border:none;
 border-radius:30px;
+
 background:linear-gradient(135deg,#6a11cb,#2575fc);
 color:#fff;
+
 font-size:16px;
 cursor:pointer;
 margin-top:10px;
-transition:0.2s;
+
+box-shadow:0 10px 25px rgba(106,17,203,0.25);
+
+transition:all 0.25s ease;
 }
 
 button:hover{
 transform:translateY(-2px);
-box-shadow:0 12px 25px rgba(106,17,203,0.3);
+box-shadow:0 15px 35px rgba(106,17,203,0.4);
+}
+
+button:active{
+transform:scale(0.97);
 }
 
 /* RESULT BOX */
@@ -240,19 +266,69 @@ transition:0.2s;
 .back-btn:active{
 transform:scale(0.9);
 }
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+#userName{
+  font-size:15px;
+  font-weight:600;
+  background:linear-gradient(135deg,#6a11cb,#2575fc);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.logout-btn{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+}
+.chart-container{
+margin-top:20px;
+padding:12px;
+border-radius:16px;
+
+background:#fff;
+
+box-shadow:
+0 6px 20px rgba(0,0,0,0.06),
+0 0 20px rgba(106,17,203,0.05);
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-
+<div class="top-bar">
+  <div id="userName"></div>
+  <div class="logout-btn" onclick="logout()">⎋</div>
+</div>
 <div class="title-box">
 <h1 class="main-title">Track Your Progress</h1>
 </div>
 
-<p class="subtitle">Stay consistent & win daily 💪</p>
-
+<p class="title">Stay consistent & win daily 💪</p>
+<div id="guestNote" style="
+display:flex;
+align-items:center;
+gap:8px;
+font-size:12px;
+background:#f9fafb;
+padding:10px;
+border-radius:12px;
+margin-top:10px;
+color:#374151;
+"></div>
 <div class="block" id="setupBox">
 <p class="label">Current Weight :</p>
 <select id="unit">
@@ -305,205 +381,281 @@ Read My Journey 🔥 →
 
 </div>
 
-<div class="back-btn" onclick="history.back()">←</div>
+<div class="back-btn" onclick="window.location.href='plan.html'">←</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } 
+from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } 
+from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-<script>
+/* 🔥 FIREBASE */
+const firebaseConfig = {
+  apiKey: "AIzaSyBZIjOvVaHMrl8iDt9u5XqBZx8u9Kw0Mqk",
+  authDomain: "fitwithsubha.firebaseapp.com",
+  projectId: "fitwithsubha",
+  storageBucket: "fitwithsubha.firebasestorage.app",
+  messagingSenderId: "783014767318",
+  appId: "1:783014767318:web:667a91a7f39936c60c7777"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* 🔥 STATE */
 let history = JSON.parse(localStorage.getItem("weightHistory")) || [];
-let start = parseFloat(localStorage.getItem("startWeight"));
-let target = parseFloat(localStorage.getItem("targetWeight"));
+let start = parseFloat(localStorage.getItem("startWeight")) || 0;
+let target = parseFloat(localStorage.getItem("targetWeight")) || 0;
 let unit = localStorage.getItem("unit") || "kg";
 let streak = parseInt(localStorage.getItem("streak")) || 0;
 let lastDate = localStorage.getItem("lastEntryDate");
 
-/* INIT */
-if(start && target){
-document.getElementById("setupBox").style.display="none";
-document.getElementById("trackBox").style.display="block";
-loadData();
+const result = document.getElementById("result");
+const errorBox = document.getElementById("errorBox");
 
-setTimeout(() => {
-    document.getElementById("result").scrollIntoView({
-        behavior: "smooth",
-        block: "center"
+/* 🔐 AUTH */
+onAuthStateChanged(auth, (user) => {
+
+  let isGuest = localStorage.getItem("guest");
+  let nameEl = document.getElementById("userName");
+  let logoutBtn = document.querySelector(".logout-btn");
+  let guestNote = document.getElementById("guestNote");
+
+  if(user){
+
+    nameEl.innerText = `Hi, ${user.email.split("@")[0]} 👋`;
+    logoutBtn.style.display = "flex";
+    guestNote.innerHTML = "";
+
+    const ref = doc(db, "progress", user.uid);
+
+    onSnapshot(ref, (docSnap) => {
+      if(docSnap.exists()){
+        let data = docSnap.data();
+
+        history = data.history || [];
+        start = data.start || 0;
+        target = data.target || 0;
+        streak = data.streak || 0;
+        unit = data.unit || "kg";
+
+        if(history.length && start && target){
+          document.getElementById("setupBox").style.display="none";
+          document.getElementById("trackBox").style.display="block";
+          loadData();
+        }
+      }
     });
-}, 200);
-}
 
-/* START TRACKING */
-function startTracking(){
-let s = parseFloat(startWeight.value);
-let t = parseFloat(targetWeightInput.value);
-let u = document.getElementById("unit").value;
+  }
 
-if(isNaN(s)||isNaN(t)) return alert("Enter valid values");
+  else if(isGuest === "true"){
 
-if(u==="lbs"){ s/=2.20462; t/=2.20462; }
+    nameEl.innerText = "Hi, Guest 👤";
+    logoutBtn.style.display = "none";
 
-localStorage.setItem("startWeight",s);
-localStorage.setItem("targetWeight",t);
-localStorage.setItem("unit",u);
+    guestNote.innerHTML = `
+      ⚠️ You're in Guest Mode. 
+      <span style="color:#6a11cb; font-weight:600; cursor:pointer;"
+      onclick="window.location.href='login.html'">
+      Login to save progress
+      </span>
+    `;
 
-history=[{weight:s,date:new Date().toLocaleDateString()}];
-localStorage.setItem("weightHistory",JSON.stringify(history));
+    if(history.length && start && target){
+      document.getElementById("setupBox").style.display="none";
+      document.getElementById("trackBox").style.display="block";
+      loadData();
+    }
 
-localStorage.setItem("streak",1);
-localStorage.setItem("lastEntryDate",new Date().toDateString());
+  } else {
+    window.location.href = "login.html";
+  }
 
-location.reload();
-}
-
-/* ADD WEIGHT */
-function addWeight(){
-let w=parseFloat(todayWeight.value);
-let today=new Date().toLocaleDateString();
-
-if(isNaN(w)) return showError("Enter valid weight");
-
-if(unit==="lbs") w/=2.20462;
-
-/* LIMIT 3 ENTRIES */
-let count=history.filter(x=>x.date===today).length;
-if(count>=3) return showError("Max 3 entries per day");
-
-/* 🚫 LIMIT ±3 KG FROM START */
-if(Math.abs(w - start) > 3){
-return showError(`⚠️ Kindly check again, your first weight of the day was (${start.toFixed(1)} ${unit||"kg"})`);
-}
-
-/* 🔥 STREAK LOGIC */
-let todayStr = new Date().toDateString();
-let yesterday = new Date();
-yesterday.setDate(yesterday.getDate()-1);
-
-if(lastDate === yesterday.toDateString()){
-streak++;
-}
-else if(lastDate !== todayStr){
-streak = 1;
-}
-
-localStorage.setItem("streak",streak);
-localStorage.setItem("lastEntryDate",todayStr);
-
-/* SAVE */
-history.push({weight:w,date:today});
-localStorage.setItem("weightHistory",JSON.stringify(history));
-
-loadData();
-
-setTimeout(() => {
-    document.getElementById("result").scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
-}, 100);
-
-todayWeight.value="";
-}
-
-/* ERROR */
-function showError(msg){
-errorBox.innerText=msg;
-}
-
-/* RESET */
-function clearAll(){
-localStorage.clear();
-location.reload();
-}
-
-/* LOAD DATA */
-function loadData(){
-
-const ctx=document.getElementById("chart").getContext("2d");
-
-/* DESTROY OLD CHART (IMPORTANT) */
-if(window.myChart) window.myChart.destroy();
-
-let weights=history.map(x=>x.weight);
-let labels=history.map(x=>x.date);
-
-/* GRAPH */
-window.myChart = new Chart(ctx,{
-type:'line',
-data:{
-labels:labels,
-datasets:[
-{
-label:"Progress",
-data:weights,
-borderColor:"#0ea5e9",
-backgroundColor:"rgba(56,189,248,0.3)",
-fill:true,
-tension:0.4
-},
-{
-label:"Target",
-data:weights.map(()=>target),
-borderDash:[6,6],
-borderColor:"#ef4444"
-}
-]
-}
 });
 
-/* VALUES */
-let current=weights[weights.length-1];
+/* 🚀 START */
+window.startTracking = function(){
 
-/* 🎯 CORRECT CHANGE LOGIC */
-let percent;
+  let s = parseFloat(startWeight.value);
+  let t = parseFloat(targetWeightInput.value);
+  let u = document.getElementById("unit").value;
 
-if(start > target){
-    // FAT LOSS → decrease is GOOD
-    let change = ((start - current) / start) * 100;
-    percent = (change > 0 ? "+" : "") + change.toFixed(1);
-}else{
-    // WEIGHT GAIN → increase is GOOD
-    let change = ((current - start) / start) * 100;
-    percent = (change > 0 ? "+" : "") + change.toFixed(1);
+  if(isNaN(s) || isNaN(t)) return alert("Enter valid values");
+
+  if(u==="lbs"){ s/=2.20462; t/=2.20462; }
+
+  history = [{weight:s, date:new Date().toLocaleDateString()}];
+  streak = 1;
+
+  localStorage.setItem("weightHistory",JSON.stringify(history));
+  localStorage.setItem("startWeight",s);
+  localStorage.setItem("targetWeight",t);
+  localStorage.setItem("unit",u);
+  localStorage.setItem("streak",streak);
+  localStorage.setItem("lastEntryDate",new Date().toDateString());
+
+  let user = auth.currentUser;
+
+  if(user){
+    setDoc(doc(db, "progress", user.uid), {
+      history, start:s, target:t, streak, unit:u
+    });
+  }
+
+  location.reload();
 }
 
-/* COLOR */
-let changeColor;
+/* ➕ ADD */
+window.addWeight = function(){
 
-if(start > target){
-changeColor = current < start ? "#22c55e" : "#ef4444";
-}else{
-changeColor = current > start ? "#22c55e" : "#ef4444";
+  errorBox.innerText = "";
+
+  let w = parseFloat(todayWeight.value);
+  let today = new Date().toLocaleDateString();
+
+  if(isNaN(w)) return showError("Enter valid weight");
+
+  if(unit==="lbs") w/=2.20462;
+
+  let count = history.filter(x=>x.date===today).length;
+  if(count>=3) return showError("Max 3 entries per day");
+
+  let lastWeight = history.length ? history[history.length-1].weight : start;
+
+  /* ✅ YOUR ORIGINAL STRICT RULES */
+  if(Math.abs(w-lastWeight)>3)
+    return showError("Unrealistic jump");
+
+  if(Math.abs(w-start)>3)
+    return showError("Kindly check your weight again,this is an unrealistic change within a day");
+
+  /* 🔥 STREAK */
+  let todayStr = new Date().toDateString();
+  let yesterday = new Date();
+  yesterday.setDate(yesterday.getDate()-1);
+
+  if(lastDate === yesterday.toDateString()) streak++;
+  else if(lastDate !== todayStr) streak = 1;
+
+  localStorage.setItem("streak",streak);
+  localStorage.setItem("lastEntryDate",todayStr);
+
+  history.push({weight:w,date:today});
+  localStorage.setItem("weightHistory",JSON.stringify(history));
+
+  let user = auth.currentUser;
+
+  if(user){
+    setDoc(doc(db, "progress", user.uid), {
+      history,start,target,streak,unit
+    });
+  }
+
+  errorBox.style.color = "#22c55e";
+  errorBox.innerText = "✅ Progress added";
+
+  loadData();
+  todayWeight.value = "";
 }
 
-/* MESSAGE */
-let msg="",color="#22c55e";
-
-if(history.length === 1){
-msg = "🚀 Welcome to your journey";
-color = "#6a11cb";
-}
-else if(Math.abs(current-target)<0.2){
-msg="🎯 Goal reached — amazing!";
-color="#6a11cb";
-}
-else if(Math.abs(current-target)<Math.abs(start-target)){
-msg="✅ Moving towards goal";
-}
-else{
-msg="⚠️ Going away — focus needed";
-color="#ef4444";
+/* ❌ ERROR */
+function showError(msg){
+  errorBox.style.color = "#ef4444";
+  errorBox.innerText = msg;
 }
 
-/* DISPLAY */
-result.innerHTML=`
-🔥 Start: ${start.toFixed(1)} ${unit || "kg"}<br>
-📍 Current: ${current.toFixed(1)} ${unit || "kg"}<br>
-🎯 Target: ${target.toFixed(1)} ${unit || "kg"}<br>
-📊 Change: <span class="change-value" style="color:${changeColor};">
-${percent}%
-</span><br><br>
-🔥 Streak: ${streak} days<br><br>
-<div style="color:${color};font-weight:600;">${msg}</div>
-`;
+/* 🗑️ RESET (SAFE) */
+window.clearAll = function(){
+  localStorage.removeItem("weightHistory");
+  localStorage.removeItem("startWeight");
+  localStorage.removeItem("targetWeight");
+  localStorage.removeItem("streak");
+  localStorage.removeItem("lastEntryDate");
+  location.reload();
+}
+
+/* 📊 LOAD */
+function loadData(){
+
+  if(!history.length || !start || !target) return;
+
+  const ctx = document.getElementById("chart").getContext("2d");
+
+  if(window.myChart) window.myChart.destroy();
+
+  let weights = history.map(x=>x.weight);
+  let labels = history.map(x=>x.date);
+
+  window.myChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:"Progress",
+          data:weights,
+          borderColor:"#0ea5e9",
+          backgroundColor:"rgba(56,189,248,0.3)",
+          fill:true,
+          tension:0.4
+        },
+        {
+          label:"Target",
+          data:weights.map(()=>target),
+          borderDash:[6,6],
+          borderColor:"#ef4444"
+        }
+      ]
+    }
+  });
+
+  let current = weights[weights.length-1];
+
+  let percent="0.0",changeColor="#22c55e",msg="",color="#22c55e";
+
+  if(start>target){
+    let change=((start-current)/start)*100;
+    percent=(change>0?"+":"")+change.toFixed(1);
+    changeColor=current<start?"#22c55e":"#ef4444";
+  }else{
+    let change=((current-start)/start)*100;
+    percent=(change>0?"+":"")+change.toFixed(1);
+    changeColor=current>start?"#22c55e":"#ef4444";
+  }
+
+  if(history.length===1){
+    msg="🚀 Welcome"; color="#6a11cb";
+  }
+  else if(Math.abs(current-target)<0.2){
+    msg="🎯 Goal reached"; color="#6a11cb";
+  }
+  else if(Math.abs(current-target)<Math.abs(start-target)){
+    msg="✅ On track";
+  }
+  else{
+    msg="⚠️ Off track"; color="#ef4444";
+  }
+
+  result.innerHTML = `
+  🔥 Start: ${start.toFixed(1)} ${unit}<br>
+  📍 Current: ${current.toFixed(1)} ${unit}<br>
+  🎯 Target: ${target.toFixed(1)} ${unit}<br>
+  📊 Change: <span style="color:${changeColor};">${percent}%</span><br><br>
+  🔥 Streak: ${streak} days<br><br>
+  <div style="color:${color};font-weight:600;">${msg}</div>
+  `;
+
+  setTimeout(()=>{
+    result.scrollIntoView({behavior:"smooth",block:"center"});
+  },100);
+}
+
+/* 🔓 LOGOUT */
+window.logout = function(){
+  signOut(auth).then(()=> location.href="login.html");
 }
 </script>
-
 </body>
 </html>

@@ -8,174 +8,213 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+/* ✅ FIX MOVEMENT ISSUE (IMPORTANT) */
+html, body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
 
 body{
-    font-family:'Poppins',sans-serif;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 
-    background: linear-gradient(135deg,#6a11cb,#2575fc);
-    transition:0.4s;
+  background: linear-gradient(135deg,#6a11cb,#2575fc);
+
+  position:relative;
+  overflow-x:hidden;
+  overflow-y:auto;
+
+  transition:0.4s;
 }
 
 /* FADE OUT */
 body.fade-out{
-    opacity:0;
+  opacity:0;
 }
 
 /* CARD */
 .card{
-    position:relative;
-    width:92%;
-    max-width:420px;
-    padding:55px 30px;
-    border-radius:26px;
-    text-align:center;
-    color:#fff;
+  position:relative;
+  width:92%;
+  max-width:420px;
+  padding:55px 30px;
+  border-radius:26px;
+  text-align:center;
+  color:#fff;
 
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
 
-    border:1px solid rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.25);
 
-    box-shadow:
-        0 20px 60px rgba(37,117,252,0.25),
-        0 10px 30px rgba(0,0,0,0.35);
+  /* 🔥 CLEAN SHADOW (LESS MUDDY) */
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.35),
+    0 10px 25px rgba(106,17,203,0.25);
 
-    animation:fadeIn 0.6s ease;
+  animation:fadeIn 0.6s ease;
+  z-index:2;
 }
 
-/* SOFT GLOW */
+/* SOFT GLOW (CONTROLLED) */
 .card::before{
-    content:"";
-    position:absolute;
-    top:-40px;
-    left:-40px;
-    width:120%;
-    height:120%;
-    background: radial-gradient(circle, rgba(37,117,252,0.2), transparent 70%);
-    z-index:-1;
+  content:"";
+  position:absolute;
+  inset:-30px;
+  background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%);
+  z-index:-1;
 }
 
 /* LOGO */
 .logo img{
-    width:140px;
-    border-radius:26px;
-    padding:14px;
-    background: rgba(255,255,255,0.15);
-    box-shadow:
-        0 0 40px rgba(255,255,255,0.3),
-        0 15px 40px rgba(0,0,0,0.5);
+  width:135px;
+  border-radius:22px;
+  padding:14px;
+
+  background: rgba(255,255,255,0.15);
+
+  box-shadow:
+    0 0 25px rgba(255,255,255,0.25),
+    0 12px 30px rgba(0,0,0,0.4);
+
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
 }
 
 /* TEXT */
 .subtitle{
-    margin-top:22px;
-    font-size:22px;
-    font-weight:700;
-    line-height:1.5;
+  margin-top:22px;
+  font-size:22px;
+  font-weight:700;
+  line-height:1.5;
+
+  text-shadow:0 2px 8px rgba(0,0,0,0.25);
+
+  animation: fadeInText 1s ease;
 }
 
 .welcome{
-    margin-top:16px;
-    font-size:17px;
-    opacity:0.95;
+  margin-top:16px;
+  font-size:16px;
+  opacity:0.9;
 }
 
 .countdown{
-    margin-top:22px;
-    font-size:16px;
-    opacity:0.9;
+  margin-top:22px;
+  font-size:15px;
+  opacity:0.85;
 }
 
 /* PROGRESS BAR */
 .progress-bar{
-    width:100%;
-    height:6px;
-    background:rgba(255,255,255,0.2);
-    border-radius:10px;
-    margin-top:12px;
-    overflow:hidden;
+  width:100%;
+  height:6px;
+  background:rgba(255,255,255,0.2);
+  border-radius:10px;
+  margin-top:12px;
+  overflow:hidden;
 }
 
 .progress{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,#6a11cb,#2575fc);
-    transition:width 1s linear;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6a11cb,#2575fc);
+  transition:width 1s linear;
 }
 
 /* BUTTON */
 button{
-    margin-top:20px;
-    padding:14px 28px;
-    border:none;
-    border-radius:30px;
+  margin-top:22px;
+  padding:14px 28px;
+  border:none;
+  border-radius:30px;
 
-    background:linear-gradient(135deg,#6a11cb,#2575fc);
-    color:#fff;
+  background:linear-gradient(135deg,#6a11cb,#2575fc);
+  color:#fff;
 
-    font-size:16px;
-    font-weight:600;
-    cursor:pointer;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
 
-    box-shadow:0 10px 25px rgba(37,117,252,0.4);
-    transition:.25s;
+  box-shadow:
+    0 10px 25px rgba(37,117,252,0.4);
+
+  transition:.25s;
+
+  /* 🔥 SUBTLE PULSE (NOT OVERPOWERING) */
+  animation: pulse 2.5s infinite;
 }
 
 button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 15px 35px rgba(37,117,252,0.6);
+  transform:translateY(-2px);
+  box-shadow:
+    0 15px 35px rgba(37,117,252,0.55);
 }
 
 button:active{
-    transform:scale(0.97);
+  transform:scale(0.96);
 }
 
 /* FOOTER */
 .footer{
-    margin-top:24px;
-    font-size:12px;
-    opacity:0.6;
+  margin-top:24px;
+  font-size:12px;
+  opacity:0.7;
 }
 
-/* ORBS */
+/* ORBS (FIXED POSITION — NO SHIFT) */
 .orb{
-    position:absolute;
-    width:160px;
-    height:160px;
-    border-radius:50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.3), transparent);
-    filter: blur(40px);
-    animation: float 6s ease-in-out infinite;
+  position:absolute;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25), transparent);
+  filter: blur(45px);
+  animation: float 6s ease-in-out infinite;
+  pointer-events:none;
 }
 
-.o1{top:-50px; left:-50px;}
-.o2{top:-50px; right:-50px;}
-.o3{bottom:-50px; left:-50px;}
-.o4{bottom:-50px; right:-50px;}
+.o1{top:-40px; left:-40px;}
+.o2{top:-40px; right:-40px;}
+.o3{bottom:-40px; left:-40px;}
+.o4{bottom:-40px; right:-40px;}
 
 @keyframes float{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-12px);}
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-10px);}
 }
 
 @keyframes fadeIn{
-    from{opacity:0; transform:translateY(20px);}
-    to{opacity:1; transform:translateY(0);}
-}
-button{
-    animation: pulse 2s infinite;
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
 }
 
-@keyframes pulse{
-    0%{box-shadow:0 0 0 0 rgba(255,255,255,0.4);}
-    70%{box-shadow:0 0 0 15px rgba(255,255,255,0);}
-    100%{box-shadow:0 0 0 0 rgba(255,255,255,0);}
+@keyframes fadeInText{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
 }
+
+/* 🔥 CLEAN PULSE */
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(255,255,255,0.25);}
+  70%{box-shadow:0 0 0 12px rgba(255,255,255,0);}
+  100%{box-shadow:0 0 0 0 rgba(255,255,255,0);}
+}
+
 </style>
 </head>
 
@@ -209,7 +248,7 @@ button{
 </div>
 
 <div class="helper">
-    Don’t want to wait? Start now 👇
+    Skip the wait — start instantly ⚡
 </div>
 
 <button onclick="goNow()">
@@ -252,10 +291,38 @@ function goNow(){
     document.body.classList.add("fade-out");
 
     setTimeout(()=>{
-        window.location.href = "bodystat.html";
+        redirectUser();
     }, 400);
 }
 </script>
+<script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZIjOvVaHMrl8iDt9u5XqBZx8u9Kw0Mqk",
+  authDomain: "fitwithsubha.firebaseapp.com",
+  projectId: "fitwithsubha",
+  storageBucket: "fitwithsubha.firebasestorage.app",
+  messagingSenderId: "783014767318",
+  appId: "1:783014767318:web:667a91a7f39936c60c7777"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* 🔥 STORE USER STATE */
+window.redirectUser = function(){
+  onAuthStateChanged(auth, user => {
+    if(user){
+      window.location.href = "bodystat.html";
+    }else{
+      window.location.href = "login.html";
+    }
+  });
+};
+
+</script>
 </body>
 </html>
